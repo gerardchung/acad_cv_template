@@ -30,6 +30,6 @@ execute:
 - I prefer to use csv to (1) automate the styling and (2) inputing data into csv is just easier than manually updating the cv
 
 #### Samples
-
+- markdown codes [here](acad_cv_template.Rmd)
 - this is how the template looks like [here](acad_cv_template.pdf)
 - this is how my cv looks like [here](cv_2025.pdf)
