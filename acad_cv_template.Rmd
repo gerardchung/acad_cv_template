@@ -1,0 +1,192 @@
+---
+format:
+  pdf:
+    papersize: <PAPER_SIZE>
+    geometry: margin=1in
+    fontsize: <FONT_SIZE>
+    mainfont: "Lato"  # choose your font
+    linestretch: 1.15
+    colorlinks: true
+    urlcolor: black
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(readr)
+
+# Function to format publications with proper spacing and consistent font
+format_publications <- function(data) {
+  # Create citations
+  citations <- data %>%
+    arrange(desc(year)) %>%
+    mutate(
+      citation = paste0(
+        authors, " (", year, "). ",
+        title, ". ",
+        journal
+      )
+    ) %>%
+    pull(citation)
+  
+  # Create a data frame with blank rows between citations
+  n_citations <- length(citations)
+  formatted_df <- data.frame(
+    citation = character(n_citations * 2 - 1)
+  )
+  
+  # Fill in citations and blank rows
+  for(i in 1:n_citations) {
+    formatted_df$citation[2*i - 1] <- citations[i]
+    if(i < n_citations) {
+      formatted_df$citation[2*i] <- ""  # Insert blank row
+    }
+  }
+  
+  # Create table with kable
+  formatted_df %>%
+    kable(format = "pipe", 
+          col.names = NULL) %>%
+    kable_styling(font_size = 11,
+                  full_width = TRUE,
+                  bootstrap_options = "condensed") %>%
+    column_spec(1, width = "6.5in")
+}
+
+# Function to create tables with consistent styling
+create_table <- function(data, widths = NULL, align = NULL) {
+  if (is.null(align)) {
+    align = rep("l", ncol(data))
+  }
+  
+  total_width <- sum(as.numeric(gsub("in", "", widths)))
+  if (total_width > 6.5) {
+    scaling_factor <- 6.5 / total_width
+    widths <- paste0(as.numeric(gsub("in", "", widths)) * scaling_factor, "in")
+  }
+  
+  tbl <- data %>%
+    kable(format = "pipe", 
+          align = align,
+          col.names = NULL,
+          escape = FALSE) %>%
+    kable_styling(font_size = 11,
+                  full_width = TRUE,
+                  bootstrap_options = "condensed")
+  
+  if (!is.null(widths)) {
+    for (i in 1:length(widths)) {
+      tbl <- tbl %>% column_spec(i, width = widths[i])
+    }
+  }
+  
+  return(tbl)
+}
+```
+
+::: {style="text-align: center; margin-bottom: 20pt"}
+# John Doe
+
+Assistant Professor\
+Department of Blah_blah\
+National University of Blah_blah\
+johndoe\@blah.edu • [your_website_url_if_you_have]
+
+*Last Updated: December <YEAR>*
+
+:::
+
+# EDUCATION
+
+```{r}
+tribble(
+  ~Degree, ~Year, ~Institution, ~Location,
+  "Ph.D. in ??", "<YEAR>", "University of ABC", "USA",
+  "Master of ??", "2016", "National University of ABC", "Singapore",
+) %>%
+  arrange(desc(Year)) %>%
+  create_table(widths = c("2.5in", "0.7in", "2.5in", "0.8in"))
+```
+
+# RESEARCH INTERESTS
+
+-   Blah blah
+-   Blah blah
+
+# ACADEMIC APPOINTMENTS
+
+```{r}
+tribble(
+  ~Years, ~Position, ~Institution,
+  "<YEAR>-present", "Assistant Professor, Department of ABC", "National University of ABC",
+  "2023-2024", "Research Fellow", "<org>",
+) %>%
+  create_table(widths = c("1.2in", "2.8in", "2.5in"))
+```
+
+# PUBLICATIONS
+
+## Peer-Reviewed Journal Articles 
+
+```{r}
+read_csv("pub_published_table.csv") %>%
+  format_publications()
+```
+
+
+# RESEARCH FUNDING AND AWARDS
+
+```{r}
+tribble(
+  ~Year, ~Award, ~Institution, ~Amount,
+  "<YEAR>", "Blah blah", "<org>", "$15000",
+  "<YEAR>", "Blah blah", "<org>", "",
+) %>%
+  arrange(desc(Year)) %>%
+  create_table(widths = c("0.8in", "2.3in", "2.5in", "0.9in"))
+```
+
+# RESEARCH PROJECTS
+
+```{r}
+read_csv("research_proj.csv") %>%
+  arrange(desc(year)) %>%
+  select(`funder/collaborator`, project, year, role) %>%
+  create_table(widths = c("1.3in", "3in", "0.8in", "1.4in"))
+```
+
+# TEACHING EXPERIENCE
+
+## Primary Instructor
+
+```{r}
+tribble(
+  ~Year, ~Course, ~Institution,
+  "<YEAR>", "SW3224 <name of course>", "NUS",
+  "<YEAR>", "SW4103 <name of course>", "NUS",
+) %>%
+  create_table(widths = c("1in", "3in", "2.5in"))
+```
+
+
+
+# SERVICE AND PROFESSIONAL ACTIVITIES
+
+## Research Consultancy
+
+```{r}
+tribble(
+  ~Year, ~Organization, ~Role,
+  "<YEAR>-<YEAR>", "ABC org", "Research Consultant",
+  "2017-2018", "<org>", "Research Consultant",
+) %>%
+  create_table(widths = c("1.2in", "3in", "2.3in"))
+```
+
+
