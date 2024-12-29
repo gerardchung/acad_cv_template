@@ -1,6 +1,20 @@
-## Template for Academic CV 
+---
+format:
+  pdf:
+    papersize: <PAPER_SIZE>
+    geometry: margin=1in
+    fontsize: <FONT_SIZE>
+    mainfont: "Lato"  # choose your font
+    linestretch: 1.15
+    colorlinks: true
+    urlcolor: black
+execute:
+  echo: false
+  warning: false
+  message: false
+---
 
-\
+## Template for Academic CV 
 
 #### YAML header (the first section)
 - this section sets global configurations for the CV
